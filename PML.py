@@ -11,6 +11,8 @@ from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, r
     f1_score, matthews_corrcoef, roc_curve, roc_auc_score
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+
 
 df = pd.read_csv('neurips_2021_zenodo_0_0_1.csv')
 
@@ -193,47 +195,4 @@ X_test_A_flat = X_test_A.reshape(n_samples_A, n_time_steps_A * n_features_A * n_
 n_samples_B, n_time_steps_B, n_features_B, n_channels_B = X_test_B.shape
 X_test_B_flat = X_test_B.reshape(n_samples_B, n_time_steps_B * n_features_B * n_channels_B)
 
-# KNN Classifier
-model = KNeighborsClassifier(n_neighbors=3)
-model.fit(X_train_flat, y_train)
-# Predictions
-y_pred = model.predict(X_test_B_flat)
 
-
-# # Logistic Regression Classifier
-# model = LogisticRegression(max_iter=1000)
-# model.fit(X_train_flat, y_train)
-# y_pred = model.predict(X_test_B_flat)
-
-
-# Calculate evaluation metrics
-accuracy = accuracy_score(y_test_B, y_pred)
-precision = precision_score(y_test_B, y_pred)
-recall = recall_score(y_test_B, y_pred)
-f1 = f1_score(y_test_B, y_pred)
-mcc = matthews_corrcoef(y_test_B, y_pred)
-
-print("Accuracy:", accuracy)
-print("Precision:", precision)
-print("Recall:", recall)
-print("F1-score:", f1)
-print("MCC:", mcc)
-
-# Confusion Matrix
-print(confusion_matrix(y_test_B, y_pred))
-
-# ROC Curve
-y_scores = model.predict_proba(X_test_B_flat)[:, 1]  # probability estimates of the positive class
-fpr, tpr, thresholds = roc_curve(y_test_B, y_scores)
-roc_auc = roc_auc_score(y_test_B, y_scores)
-
-plt.figure()
-plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
-plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-plt.xlim([0.0, 1.0])
-plt.ylim([0.0, 1.05])
-plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive Rate')
-plt.title('Receiver Operating Characteristic')
-plt.legend(loc="lower right")
-plt.show()
