@@ -1,22 +1,35 @@
-from PML import X_train_flat, y_train, X_test_B_flat, y_test_B, X_test_A_flat, y_test_A
-
+import os
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, \
     f1_score, matthews_corrcoef, roc_curve, roc_auc_score
 import matplotlib.pyplot as plt
+from joblib import load
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB
+# 加载数据
+data_f_dir = os.path.join('data_f_dir')
+X_train_resampled = load((os.path.join(data_f_dir, 'X_train_resampled.joblib')))
+y_train_resampled = load((os.path.join(data_f_dir, 'y_train_resampled.joblib')))
+X_train_flat = load((os.path.join(data_f_dir, 'X_train_flat.joblib')))
+X_test_A_flat = load((os.path.join(data_f_dir, 'X_test_A_flat')))
+X_test_B_flat = load((os.path.join(data_f_dir, 'X_test_B_flat')))
+# y_train = load((os.path.join(data_f_dir, 'y_train.joblib'))
+# X_train = load((os.path.join(data_f_dir, 'X_train.joblib'))
+y_test_A = load((os.path.join(data_f_dir, 'y_test_A.joblib')))
+y_test_B = load((os.path.join(data_f_dir, 'y_test_B.joblib')))
 
 y_test = y_test_B
 X_test = X_test_B_flat
+X_train = X_train_resampled
+y_train = y_train_resampled
 
-# # KNN Classifier
-# model = KNeighborsClassifier(n_neighbors=3)
-# model.fit(X_train_flat, y_train)
-# # Predictions
-# y_pred = model.predict(X_test_B_flat)
+# KNN Classifier
+model = KNeighborsClassifier(n_neighbors=3)
+model.fit(X_train, y_train)
+# Predictions
+y_pred = model.predict(X_test)
 
 
 # # Logistic Regression Classifier
@@ -26,11 +39,11 @@ X_test = X_test_B_flat
 
 
 
-# SVM Classifier
-model = SVC(kernel='rbf')  # 默认使用线性核，但你可以根据需要更改它
-model.fit(X_train_flat, y_train)
-# Predictions
-y_pred = model.predict(X_test_B_flat)
+# # SVM Classifier
+# model = SVC(kernel='rbf')
+# model.fit(X_train_flat, y_train)
+# # Predictions
+# y_pred = model.predict(X_test_B_flat)
 
 
 # # RandomForest Classifier

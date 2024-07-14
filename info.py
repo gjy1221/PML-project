@@ -10,12 +10,12 @@ for col in categorical_columns:
     print(df[col].value_counts())
     print("\n")
 
-    # 可视化分类属性的数量分布
-    plt.figure(figsize=(10, 6))
-    sns.countplot(x=col, data=df, order=df[col].value_counts().index)
-    plt.title(f"Distribution of {col}")
-    plt.xticks(rotation=90)
-    plt.show()
+    # # 可视化分类属性的数量分布
+    # plt.figure(figsize=(10, 6))
+    # sns.countplot(x=col, data=df, order=df[col].value_counts().index)
+    # plt.title(f"Distribution of {col}")
+    # plt.xticks(rotation=90)
+    # plt.show()
 
 # Value counts for sound_type:
 # sound_type

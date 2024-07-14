@@ -6,13 +6,11 @@ import skimage.util
 import config
 import pickle
 import math
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, \
-    f1_score, matthews_corrcoef, roc_curve, roc_auc_score
-import matplotlib.pyplot as plt
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
 
+from collections import Counter
+from sklearn.datasets import make_classification
+from imblearn.over_sampling import SMOTE
+from functools import lru_cache
 
 df = pd.read_csv('neurips_2021_zenodo_0_0_1.csv')
 
@@ -184,6 +182,7 @@ if np.any(nan_indices):
     # Option 2: Drop samples with NaN values
     # X_train = X_train[~np.any(nan_indices, axis=1)]
 
+
 # 将X_train从四维数组展平成二维数组
 n_samples, n_time_steps, n_features, n_channels = X_train.shape
 X_train_flat = X_train.reshape(n_samples, n_time_steps * n_features * n_channels)
@@ -194,5 +193,41 @@ X_test_A_flat = X_test_A.reshape(n_samples_A, n_time_steps_A * n_features_A * n_
 
 n_samples_B, n_time_steps_B, n_features_B, n_channels_B = X_test_B.shape
 X_test_B_flat = X_test_B.reshape(n_samples_B, n_time_steps_B * n_features_B * n_channels_B)
+
+# 使用SMOTE增加少数类样本
+# flat
+print('Original dataset shape %s' % Counter(y_train))
+smote = SMOTE(random_state=2024)
+X_train_resampled, y_train_resampled = smote.fit_resample(X_train_flat, y_train)
+print('Resampled dataset shape %s' % Counter(y_train_resampled))
+
+# # tensor
+# print('Original dataset shape %s' % Counter(y_train))
+# smote = SMOTE(random_state=2024)
+# X_train_tensor_resampled, y_train_tensor_resampled = smote.fit_resample(X_train, y_train)
+# print('Resampled dataset shape %s' % Counter(y_train_tensor_resampled))
+
+# 保存数据
+from joblib import dump
+data_f_dir = os.path.join('data_f_dir')
+if not os.path.exists(data_f_dir):
+    os.makedirs(data_f_dir)
+dump(X_train_resampled, os.path.join(data_f_dir, 'X_train_resampled.joblib'))
+dump(y_train_resampled, os.path.join(data_f_dir, 'y_train_resampled.joblib'))
+dump(X_train_flat, os.path.join(data_f_dir, 'X_train_flat.joblib'))
+dump(X_test_A_flat, os.path.join(data_f_dir, 'X_test_A_flat'))
+dump(X_test_B_flat, os.path.join(data_f_dir, 'X_test_B_flat'))
+dump(y_train, os.path.join(data_f_dir, 'y_train.joblib'))
+dump(X_train, os.path.join(data_f_dir, 'X_train.joblib'))
+dump(y_test_A, os.path.join(data_f_dir, 'y_test_A.joblib'))
+dump(y_test_B, os.path.join(data_f_dir, 'y_test_B.joblib'))
+dump(X_test_A, os.path.join(data_f_dir, 'X_test_A.joblib'))
+dump(X_test_B, os.path.join(data_f_dir, 'X_test_B.joblib'))
+# dump(X_train_tensor_resampled, os.path.join(data_f_dir, 'X_train_tensor_resampled.joblib'))
+# dump(y_train_tensor_resampled, os.path.join(data_f_dir, 'y_train_tensor_resampled.joblib'))
+
+
+print("数据已保存。")
+
 
 
